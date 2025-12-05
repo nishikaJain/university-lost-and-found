@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Lost & Found</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 University Lost & Found</h1>
+            <p>Help reunite lost items with their owners</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('report')">Report Item</button>
+            <button class="tab-btn" onclick="showTab('view')">View Items</button>
+            <button class="tab-btn" onclick="showTab('database')">Database View</button>
+        </div>
+
+        <!-- Report Item Tab -->
+        <div id="report-tab" class="tab-content active">
+            <div class="form-container">
+                <h2>Report Lost or Found Item</h2>
+                <form id="item-form">
+                    <div class="form-group">
+                        <label>Item Status *</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="status" value="lost" required> Lost</label>
+                            <label><input type="radio" name="status" value="found" required> Found</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="item_name">Item Name *</label>
+                        <input type="text" id="item_name" name="item_name" required placeholder="e.g., Blue Backpack">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Category *</label>
+                        <select id="category" name="category" required>
+                            <option value="">Select Category</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Bags">Bags</option>
+                            <option value="Books">Books</option>
+                            <option value="Clothing">Clothing</option>
+                            <option value="Accessories">Accessories</option>
+                            <option value="Personal Items">Personal Items</option>
+                            <option value="Documents">Documents</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" rows="3" placeholder="Provide details about the item"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">Location *</label>
+                        <input type="text" id="location" name="location" required placeholder="Where was it lost/found?">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contact_name">Your Name *</label>
+                        <input type="text" id="contact_name" name="contact_name" required placeholder="Full Name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contact_email">Email</label>
+                        <input type="email" id="contact_email" name="contact_email" placeholder="your.email@university.edu">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contact_phone">Phone</label>
+                        <input type="tel" id="contact_phone" name="contact_phone" placeholder="555-0123">
+                    </div>
+
+                    <button type="submit" class="btn-primary">Submit Report</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- View Items Tab -->
+        <div id="view-tab" class="tab-content">
+            <div class="filter-bar">
+                <button class="filter-btn active" onclick="filterItems('all')">All Items</button>
+                <button class="filter-btn" onclick="filterItems('lost')">Lost Items</button>
+                <button class="filter-btn" onclick="filterItems('found')">Found Items</button>
+                <input type="text" id="search-input" placeholder="Search items..." onkeyup="searchItems()">
+            </div>
+            <div id="items-container" class="items-grid"></div>
+        </div>
+
+        <!-- Database View Tab -->
+        <div id="database-tab" class="tab-content">
+            <div class="database-view">
+                <h2>Live Database Records</h2>
+                <button onclick="refreshDatabase()" class="btn-refresh">🔄 Refresh Database</button>
+                <div id="database-table"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

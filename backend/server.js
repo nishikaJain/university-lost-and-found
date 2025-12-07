@@ -13,6 +13,13 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Validation function for phone number
+function validatePhoneNumber(phone) {
+    // Check if phone is exactly 10 digits
+    const phoneRegex = /^[0-9]{10}$/;
+    return phoneRegex.test(phone);
+}
+
 // Routes
 
 // Get all items
@@ -55,6 +62,14 @@ app.post('/api/items', async (req, res) => {
     try {
         const { item_name, category, description, status, location, contact_name, contact_email, contact_phone, image_url } = req.body;
         
+        // Validate phone number - must be exactly 10 digits
+        if (!validatePhoneNumber(contact_phone)) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Phone number must be exactly 10 digits' 
+            });
+        }
+        
         const [result] = await db.query(
             'INSERT INTO items (item_name, category, description, status, location, contact_name, contact_email, contact_phone, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
             [item_name, category, description, status, location, contact_name, contact_email, contact_phone, image_url || null]
@@ -75,6 +90,14 @@ app.put('/api/items/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const { item_name, category, description, status, location, contact_name, contact_email, contact_phone, is_claimed } = req.body;
+        
+        // Validate phone number if provided
+        if (contact_phone && !validatePhoneNumber(contact_phone)) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Phone number must be exactly 10 digits' 
+            });
+        }
         
         const [result] = await db.query(
             'UPDATE items SET item_name = ?, category = ?, description = ?, status = ?, location = ?, contact_name = ?, contact_email = ?, contact_phone = ?, is_claimed = ? WHERE id = ?',

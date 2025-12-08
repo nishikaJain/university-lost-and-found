@@ -89,6 +89,32 @@ async function loadItems(filter = 'all') {
     }
 }
 
+// Mark item as claimed
+async function markAsClaimed(itemId) {
+    if (!confirm('Mark this item as claimed?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/items/${itemId}/claim`, {
+            method: 'PATCH'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification('✅ Item marked as claimed!', 'success');
+            // Reload items to show updated status
+            loadItems();
+        } else {
+            showNotification('❌ Error: ' + result.error, 'error');
+        }
+    } catch (error) {
+        showNotification('❌ Failed to update item!', 'error');
+        console.error('Error:', error);
+    }
+}
+
 // Display items
 function displayItems(items) {
     const container = document.getElementById('items-container');
@@ -111,7 +137,10 @@ function displayItems(items) {
             <p style="font-size: 0.85em; color: #999; margin-top: 10px;">
                 <strong>Reported:</strong> ${new Date(item.date_reported).toLocaleDateString()}
             </p>
-            ${item.is_claimed ? '<p style="color: #51cf66; font-weight: 600;">✓ Claimed</p>' : ''}
+            ${item.is_claimed 
+                ? '<p style="color: #51cf66; font-weight: 600; margin-top: 10px;">✓ Claimed on ' + new Date(item.claimed_date).toLocaleDateString() + '</p>' 
+                : '<button onclick="markAsClaimed(' + item.id + ')" style="margin-top: 10px; padding: 8px 15px; background: #51cf66; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600;">Mark as Claimed</button>'
+            }
         </div>
     `).join('');
 }
@@ -180,6 +209,8 @@ function displayDatabaseTable(items) {
                     <th>Phone</th>
                     <th>Date Reported</th>
                     <th>Claimed</th>
+                    <th>Claimed Date</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -194,7 +225,14 @@ function displayDatabaseTable(items) {
                         <td>${item.contact_email || 'N/A'}</td>
                         <td>${item.contact_phone || 'N/A'}</td>
                         <td>${new Date(item.date_reported).toLocaleString()}</td>
-                        <td>${item.is_claimed ? '✓' : '✗'}</td>
+                        <td style="font-size: 1.2em; font-weight: bold; color: ${item.is_claimed ? '#51cf66' : '#ff6b6b'};">${item.is_claimed ? '✓' : '✗'}</td>
+                        <td>${item.claimed_date ? new Date(item.claimed_date).toLocaleString() : 'N/A'}</td>
+                        <td>
+                            ${!item.is_claimed 
+                                ? '<button onclick="markAsClaimed(' + item.id + ')" style="padding: 5px 10px; background: #51cf66; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9em;">Claim</button>' 
+                                : '<span style="color: #51cf66;">Claimed</span>'
+                            }
+                        </td>
                     </tr>
                 `).join('')}
             </tbody>

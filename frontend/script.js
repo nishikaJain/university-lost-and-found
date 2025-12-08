@@ -106,6 +106,8 @@ async function markAsClaimed(itemId) {
             showNotification('✅ Item marked as claimed!', 'success');
             // Reload items to show updated status
             loadItems();
+            // Also refresh database view if it's open
+            refreshDatabase();
         } else {
             showNotification('❌ Error: ' + result.error, 'error');
         }
@@ -195,6 +197,9 @@ function displayDatabaseTable(items) {
         return;
     }
     
+    // Sort items by ID in ascending order (1, 2, 3, 4, 5...)
+    const sortedItems = [...items].sort((a, b) => a.id - b.id);
+    
     const table = `
         <table class="database-table">
             <thead>
@@ -214,7 +219,7 @@ function displayDatabaseTable(items) {
                 </tr>
             </thead>
             <tbody>
-                ${items.map(item => `
+                ${sortedItems.map(item => `
                     <tr>
                         <td>${item.id}</td>
                         <td>${item.item_name}</td>
